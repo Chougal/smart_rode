@@ -1,0 +1,10 @@
+{
+  "city": "Ushuaia",
+  "speed_limit": 30,
+  "alert": "⚠️ Slippery Road - Drive Slow!",
+  "temperature": 1.16,
+  "weather": "Clouds",
+  "pedestrian": false,
+  "traffic": "Medium",
+  "timestamp": "2026-06-21 18:51:08"
+}

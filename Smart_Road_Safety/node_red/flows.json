@@ -1,0 +1,50 @@
+[
+    {
+        "id": "3e41f38d9d43d472",
+        "type": "ui_template",
+        "z": "1fac909f8ce1dc17",
+        "group": "46480cd083e1f8a1",
+        "name": "Traffic Safety Dashboard",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    /* Professional CSS Design */\n    .dashboard-container {\n        background: #0f172a;\n        color: #f8fafc;\n        font-family: 'Inter', 'Segoe UI', sans-serif;\n        padding: 20px;\n        border-radius: 16px;\n        border: 1px solid #1e293b;\n        box-shadow: 0 10px 25px rgba(0,0,0,0.5);\n    }\n\n    .header {\n        display: flex;\n        justify-content: space-between;\n        align-items: center;\n        border-bottom: 2px solid #334155;\n        padding-bottom: 10px;\n        margin-bottom: 20px;\n    }\n\n    .city-tag {\n        background: #38bdf8;\n        color: #0f172a;\n        padding: 4px 12px;\n        border-radius: 20px;\n        font-weight: bold;\n        font-size: 0.8em;\n    }\n\n    .main-display {\n        text-align: center;\n        padding: 30px 0;\n    }\n\n    .speed-value {\n        font-size: 80px;\n        font-weight: 800;\n        margin: 0;\n        line-height: 1;\n        text-shadow: 0 0 20px rgba(0,255,136,0.3);\n    }\n\n    .alert-box {\n        margin-top: 25px;\n        padding: 20px;\n        border-radius: 12px;\n        font-size: 1.4em;\n        font-weight: bold;\n        text-transform: uppercase;\n        border: 2px solid rgba(255,255,255,0.1);\n        transition: all 0.5s ease;\n    }\n\n    /* Status Icons */\n    .sensor-grid {\n        display: grid;\n        grid-template-columns: 1fr 1fr 1fr;\n        gap: 15px;\n        margin-top: 30px;\n    }\n\n    .card {\n        background: #1e293b;\n        padding: 15px;\n        border-radius: 12px;\n        text-align: center;\n    }\n\n    .card-label {\n        color: #94a3b8;\n        font-size: 0.7em;\n        text-transform: uppercase;\n        margin-bottom: 5px;\n    }\n\n    .card-value {\n        font-size: 1.1em;\n        font-weight: 600;\n    }\n\n    /* Alert States */\n    .state-safe { color: #22c55e; border-color: #22c55e; background: rgba(34, 197, 94, 0.1); }\n    .state-warning { color: #f59e0b; border-color: #f59e0b; background: rgba(245, 158, 11, 0.1); animation: blink 2s infinite; }\n    .state-danger { color: #ef4444; border-color: #ef4444; background: rgba(239, 68, 68, 0.2); animation: pulse 1s infinite; }\n\n    @keyframes pulse {\n        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }\n        70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }\n        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }\n    }\n</style>\n\n<div class=\"dashboard-container\">\n    <!-- Header -->\n    <div class=\"header\">\n        <div>\n            <span style=\"color: #38bdf8; font-weight: bold;\">SMART CONNECTIVITY</span><br>\n            <small style=\"color: #64748b;\">Road Safety Infrastructure v2.1</small>\n        </div>\n        <div class=\"city-tag\">📍 {{msg.payload.city}}</div>\n    </div>\n\n    <!-- Speed & Signage -->\n    <div class=\"main-display\">\n        <p style=\"color: #94a3b8; margin: 0;\">ALLOWED SPEED LIMIT</p>\n        <h1 class=\"speed-value\" \n            style=\"color: {{msg.payload.speed_limit == 0 ? '#ef4444' : (msg.payload.speed_limit < 60 ? '#f59e0b' : '#22c55e')}}\">\n            {{msg.payload.speed_limit}}\n            <small style=\"font-size: 0.3em;\">KM/H</small>\n        </h1>\n\n        <div class=\"alert-box {{msg.payload.pedestrian ? 'state-danger' : (msg.payload.speed_limit < 60 ? 'state-warning' : 'state-safe')}}\">\n            {{msg.payload.alert}}\n        </div>\n    </div>\n\n    <!-- Sensor Data Grid -->\n    <div class=\"sensor-grid\">\n        <div class=\"card\">\n            <div class=\"card-label\">Weather</div>\n            <div class=\"card-value\">{{msg.payload.weather}}</div>\n            <div style=\"font-size: 0.8em; color: #38bdf8;\">{{msg.payload.temperature}}°C</div>\n        </div>\n\n        <div class=\"card\">\n            <div class=\"card-label\">Traffic Density</div>\n            <div class=\"card-value\" style=\"color: {{msg.payload.traffic == 'High' ? '#ef4444' : '#f8fafc'}}\">\n                {{msg.payload.traffic}}\n            </div>\n        </div>\n\n        <div class=\"card\">\n            <div class=\"card-label\">Pedestrian</div>\n            <div class=\"card-value\" style=\"color: {{msg.payload.pedestrian ? '#ef4444' : '#22c55e'}}\">\n                {{msg.payload.pedestrian ? 'DETECTED' : 'CLEAR'}}\n            </div>\n        </div>\n    </div>\n\n    <!-- Footer -->\n    <div style=\"margin-top: 20px; text-align: center; font-size: 0.7em; color: #475569;\">\n        Last Update: {{msg.payload.timestamp}}\n    </div>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 610,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "46480cd083e1f8a1",
+        "type": "ui_group",
+        "name": "Road Safety Dashboard",
+        "tab": "814c0e500024bba8",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "814c0e500024bba8",
+        "type": "ui_tab",
+        "name": "Road Safety",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "c249ec521cfa506d",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]

@@ -1,0 +1,9 @@
+---
+
+### 4. Important: Security (.gitignore)
+Create a file named `.gitignore` in your root folder. **DO NOT** upload your real API keys to GitHub. Add this line inside the file:
+```text
+.env
+.vscode/
+__pycache__/
+*.pyc
