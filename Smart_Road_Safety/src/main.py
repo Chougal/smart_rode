@@ -4,7 +4,12 @@ import json
 import time
 import random
 import urllib.parse
+import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ── Credentials ──────────────────────────────────────────────
 WEATHER_API_KEY = "1a0614be2518aedd0354ee777eb05469"

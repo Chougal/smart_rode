@@ -1,0 +1,195 @@
+================================================================================
+                    SMART ROAD SAFETY SIGN SYSTEM (IoT-BASED)
+                            SYSTEM DOCUMENTATION
+================================================================================
+
+1. PROJECT OVERVIEW
+--------------------------------------------------------------------------------
+The Smart Road Safety Sign System is an IoT-based traffic safety solution that 
+replaces traditional, static road signage with dynamic, connected digital 
+displays. By integrating real-time weather conditions, simulated sensor inputs, 
+cloud logging, and a centralized monitoring dashboard, the system dynamically 
+adapts road regulations (such as speed limits and safety alerts) to ensure 
+maximum safety for drivers and pedestrians.
+
+Key Features:
+- Real-time weather integration via OpenWeatherMap API to dynamically adjust 
+  speed limits based on current conditions.
+- Priority-based safety overrides for pedestrian crossings and high traffic 
+  situations.
+- Cloud database logging via MongoDB Atlas for historic analysis and safety auditing.
+- Professional high-tech monitoring dashboard built with Node-RED for live 
+  visualization.
+- IoT connectivity powered by HiveMQ Cloud MQTT Broker.
+
+
+2. SYSTEM ARCHITECTURE
+--------------------------------------------------------------------------------
+The system follows a typical IoT-publish-subscribe and cloud-logging architecture:
+
+   [OpenWeatherMap API]  [Simulated Sensors]
+           │                      │
+           ▼                      ▼
+    ┌────────────────────────────────────┐
+    │          Python Application        │
+    │         (Smart Logic Engine)       │
+    └──────────────────┬─────────────────┘
+                       │
+         ┌─────────────┴─────────────┐
+         ▼                           ▼
+  [MongoDB Atlas]             [HiveMQ Cloud]
+ (Cloud Database)             (MQTT Broker)
+       │                             │
+       │ (Log Storage)               │ (Pub/Sub: Topic "road/safety")
+       ▼                             ▼
+  [Data Analytics]            [Node-RED Dashboard]
+                              (Real-time UI & Alerts)
+
+
+3. DIRECTORY STRUCTURE
+--------------------------------------------------------------------------------
+The project codebase is organized as follows:
+
+Smart-Road-Safety/
+│
+├── README.md                           <- High-level overview and setup commands
+├── Smart_Road_Safety_Documentation.txt <- [This File] Detailed system documentation
+│
+└── Smart_Road_Safety/
+    ├── data/
+    │   └── sample_log.json            <- Representative log entry structure
+    │
+    ├── node_red/
+    │   └── flows.json                 <- Configured Node-RED flow for the dashboard
+    │
+    ├── src/
+    │   ├── config.py                  <- Configuration and environment loader
+    │   ├── sensors.py                 <- Sensor data simulator helper
+    │   └── main.py                    <- Core execution script (IoT publisher & logic)
+    │
+    ├── .gitignore                     <- Files to exclude from Git tracking
+    └── requirements.txt               <- Python dependencies list
+
+
+4. DETAILED FILE ANALYSIS
+--------------------------------------------------------------------------------
+
+A. src/config.py
+- Purpose: Loads variables from a `.env` file to support secure and clean configuration.
+- Imports `dotenv` to load configurations like `WEATHER_API_KEY`, `MQTT_BROKER`, 
+  `MQTT_USER`, and `MQTT_PASS`.
+- Note: Provides standard definitions, although core configurations are directly 
+  declared in `main.py` for direct testing convenience.
+
+B. src/sensors.py
+- Purpose: Simulated sensor generator module.
+- Generates mock dictionary data representing a roadside sensor array:
+  * Traffic Density ("Low", "Medium", "High")
+  * Pedestrian Detected (True/False)
+  * Accident Ahead (True/False with 25% probability)
+  * Sign Mode ("School", "Hospital", "Default")
+
+C. src/main.py
+- Purpose: The orchestrator of the system. 
+- Performs the following routine every 10 seconds:
+  1. Calls OpenWeatherMap API for weather status in the monitored city (default: Ushuaia).
+  2. Generates random events (pedestrians, traffic level) to simulate real-world changes.
+  3. Applies decision-making logic to compute the safe speed limit and alert text.
+  4. Builds a JSON payload containing the complete state.
+  5. Publishes the JSON payload to the HiveMQ Cloud MQTT broker under topic `road/safety`.
+  6. Inserts the payload directly into MongoDB Atlas under `road_safety.RoadLogs`.
+  7. Prints a local console output tracking the status.
+
+D. node_red/flows.json
+- Purpose: Defines a customized Node-RED dashboard layout.
+- Integrates a beautiful, glassmorphic dark-theme UI template designed using 
+  HTML/CSS (Inter font, sleek layout).
+- Displays real-time information: Speed limit (color-coded: Green for normal, 
+  Amber for warnings, Red for stop), weather description, temperature, traffic 
+  density, pedestrian detection warnings, and the last update timestamp.
+
+
+5. DYNAMIC SIGN LOGIC & RULES
+--------------------------------------------------------------------------------
+The Smart Sign Logic prioritizes safety by adjusting rules dynamically:
+
+- Condition 1: Cold/Snowy Weather (Slippery Conditions)
+  * Weather: "Snow", "Sleet" or Temperature < 5°C
+  * Output Speed: 30 km/h
+  * Output Alert: "⚠️ Slippery Road - Drive Slow!"
+
+- Condition 2: Wet/Rainy Weather
+  * Weather: "Thunderstorm", "Drizzle", "Rain"
+  * Output Speed: 40 km/h
+  * Output Alert: "🌧️ Wet Road - Reduce Speed!"
+
+- Condition 3: Normal Conditions
+  * Weather: "Clear", "Clouds", etc.
+  * Output Speed: 60 km/h
+  * Output Alert: "✅ Road Clear - Safe to Drive"
+
+- Priority Overrides:
+  * Pedestrian Crossing: If a pedestrian is detected, the speed limit is 
+    immediately overridden to 0 km/h and the alert displays "🚶 Pedestrian Crossing: STOP!"
+  * High Traffic: If the traffic density is "High", the alert is updated to 
+    "🚗 Heavy Traffic - Take Alt Route!" to help redirect traffic flows.
+
+
+6. DATABASE STRUCTURE & PAYLOAD DEFINITION
+--------------------------------------------------------------------------------
+The MongoDB Atlas database `road_safety` contains the `RoadLogs` collection. 
+The documents are stored in the following JSON format:
+
+{
+  "city": "Ushuaia",
+  "speed_limit": 30,
+  "alert": "⚠️ Slippery Road - Drive Slow!",
+  "temperature": 1.16,
+  "weather": "Clouds",
+  "pedestrian": false,
+  "traffic": "Medium",
+  "timestamp": "2026-06-21 18:51:08"
+}
+
+
+7. ENVIRONMENT VARIABLES & CREDENTIALS
+--------------------------------------------------------------------------------
+To run the system, configure the credentials inside `src/main.py` or through a 
+local `.env` file in the project folder.
+
+Key credentials configured in this deployment:
+- OpenWeatherMap API Key: Configured to query weather data.
+- HiveMQ Broker: Connects securely on port 8883 (TLS).
+- MongoDB Connection URI: Uses `MONGO_PASS` environment variable for authentication.
+
+
+8. SETUP AND RUNNING INSTRUCTIONS
+--------------------------------------------------------------------------------
+
+Step 1: Install Dependencies
+----------------------------
+Install python packages from the requirements list:
+$ pip install -r Smart_Road_Safety/requirements.txt
+
+Step 2: Database Configuration
+------------------------------
+Ensure you have set the `MONGO_PASS` environment variable containing the password
+for the MongoDB user `rcklimble95_db_user`. Alternatively, create a `.env` file 
+at the project root containing:
+MONGO_PASS=your_mongodb_password
+
+Step 3: Run the Main Engine
+---------------------------
+Start the python service to begin fetching data, computing logic, and publishing 
+to HiveMQ and MongoDB Atlas:
+$ python Smart_Road_Safety/src/main.py
+
+Step 4: Load Node-RED Dashboard
+-------------------------------
+1. Install Node-RED: `npm install -g node-red`
+2. Run Node-RED locally by typing `node-red` in the console.
+3. Open Node-RED editor (usually `http://127.0.0.1:1880/`).
+4. Click Menu (top right) -> Import -> Select File, and choose `Smart_Road_Safety/node_red/flows.json`.
+5. Deploy the flow.
+6. Open the Node-RED UI dashboard at `http://127.0.0.1:1880/ui/`.
+================================================================================
